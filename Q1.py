@@ -51,43 +51,52 @@ J = [2,5,14]
 k = 3
 a = 0.1
 
-for i in range(k):
+for i in range(n):
     aux = []
-    for j in range(n):
+    for j in range(k):
         aux.append(m1.addVar(vtype=GRB.BINARY))
     X.append(aux)
 
-print(vi)
+# print(vi)
     
 m1.update()
 
 fo = LinExpr()
 fo = 0
 
-for j in range(n):
-    for i in range(k):
-        fo+=dij[i][J[i]]*X[i][j]
+for i in range(n):
+    for j in range(k):
+        fo+=dij[i][J[j]]*X[i][j]
         
-m1.setObjective(fo,GRB.MAXIMIZE)
+m1.setObjective(fo,GRB.MINIMIZE)
 
 for i in range(n):
     s = 0
     for j in range(k):
         s+=X[i][j] #correspond a la somme des xij sur j 
         
-    m1.addConstr(s=1) #contrainte 1: une ville appartient à un unique secteur
+    m1.addConstr(s, GRB.EQUAL, 1) #contrainte 1: une ville appartient à un unique secteur
     
 for j in range(k):
     s1=0
     s2=0
     for i in range(n):
-        s1+=X[j][i]*vi[i] #somme des populations totales des villes composant un secteur
+        s1+=X[i][j]*vi[i] #somme des populations totales des villes composant un secteur
         s2+=vi[i] #somme des populations totales des villes
     
     m1.addConstr((s1/s2)<=((1+a)/k)) #contrainte 2: populations totales des villes composant un secteur ne doit pas dépasser gamma (voir poly)
 
 
+for j in range(k):
+    s = 0
+    for i in range(n):
+        s+=X[i][j] #correspond a la somme des xij sur j 
+        
+    m1.addConstr(s>=1)
+    
 m1.optimize()
+
+print(m1.X)
         
         
     
