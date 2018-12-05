@@ -126,9 +126,18 @@ for data in f:
 colors = [ (355, 0, 0), (0, 355, 0), (0, 0, 355), (177, 0, 177), (0, 177, 177) ]   #rouge, vert, bleu, violet, turquoise
 for i in range(n):
     for j in range(k):
-        if X[i][j].x == 1 :
+        if X[i][j].x == 1 and i not in J:
             la, lo = coord_i[i]
-            img[la,lo] = colors[j]
+            img[lo,la] = colors[j]
+            for c in range(1,4):
+                img[lo+c,lo] = colors[j]
+                img[la,lo+c] = colors[j]
+                img[la-c,lo] = colors[j]
+                img[la,lo-c] = colors
+        elif X[i][j].x == 1 and i in J:
+            la, lo = coord_i[i]
+            img[lo,la] = colors[j]
+            
             
 mpimg.imsave("res_k=3_a=0,1.png", img)
 
