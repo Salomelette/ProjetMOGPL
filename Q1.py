@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Nov 22 18:42:57 2018
-
 @author: 3520413
 """
 
@@ -98,53 +97,51 @@ for j in range(k):
      
 m1.optimize()
 
-min = 0
+maxdij = 0
 
 for i in range(n):
     for j in range(k):
-        if X[i][j].x == 1 and d[i][j] < min :
-            min = d[i][j]         
+        if X[i][j].x == 1 and dij[i][j] > maxdij :
+            maxdij = dij[i][j]         
 
+print "k = ", k, " a = ", a 
 print "Valeur de la fonction objectif =" , m1.ObjVal
 print "Matrice des xij :\n" , m1.X
 print "Satisfaction moyenne =" , m1.ObjVal/n
-print "Satisfaction du maire le moins bien servi =" , min
+print "Satisfaction du maire le moins bien servi =" , maxdij
 
 #récupération de la carte
 img = mpimg.imread("./Data/92.png")
 
 #récupération des coordonnées de chaque ville
-f = open("/users/Etu3/3520413/mogpl/projet/Data/villes92.txt")
+f = open("/users/Etu3/3520413/mogpl/projet/Data/coordvilles92.txt")
 
 coord_i=[]
 for data in f:
     la = re.findall('\d+', data)[0]
     lo = re.findall('\d+', data)[1]
-    coord_i.append((la,lo)))
+    coord_i.append((int(la),int(lo)))
 
 #affichage sur la carte
-colors = [ (355, 0, 0), (0, 355, 0), (0, 0, 355), (177, 0, 177), (0, 177, 177) ]   #rouge, vert, bleu, violet, turquoise
+colors = [ (300, 0, 0), (0, 300, 0), (0, 0, 300), (177, 0, 177), (0, 177, 177) ]   #rouge, vert, bleu, violet, turquoise
 for i in range(n):
     for j in range(k):
-        if X[i][j].x == 1 and i not in J:
+        if X[i][j].x == 1:
             la, lo = coord_i[i]
             img[lo,la] = colors[j]
-            for c in range(1,4):
-                img[lo+c,lo] = colors[j]
-                img[la,lo+c] = colors[j]
-                img[la-c,lo] = colors[j]
-                img[la,lo-c] = colors
-        elif X[i][j].x == 1 and i in J:
-            la, lo = coord_i[i]
-            img[lo,la] = colors[j]
+            for c in range(-3,4):
+                for r in range(-3,4):
+                    img[lo+c,la+r] = colors[j]
+            if i in J[:k]:
+                for c in range(-5,5):
+                    img[lo,la+c] = (0, 0, 0)
+#                   img[lo,la-5] = colors[j]
+                    img[lo+c,la] = (0, 0, 0)
+#                   img[lo-5,la] = colors[j]
+#        elif X[i][j].x == 1 and i in J:
+#            la, lo = coord_i[i]
+#            img[lo,la] = colors[j]
             
             
-mpimg.imsave("res_k=3_a=0,1.png", img)
+mpimg.imsave("res_k="+str(k)+"_a="+str(a)+".png", img)
 
-
-
-
-        
-        
-    
-        
