@@ -12,7 +12,7 @@ import re
 import matplotlib.image as mpimg
 
 #recuperation du nombre de villes 
-f = open("/users/Etu3/3520413/mogpl/projet/Data/villes92.txt")
+f = open("/home/salom/mogpl/projet/Data/villes92.txt")
 
 n=0
 for data in f:
@@ -22,7 +22,7 @@ f.close()
             
     
 #recuperation des distances
-f = open("/users/Etu3/3520413/mogpl/projet/Data/distances92.txt")
+f = open("/home/salom/mogpl/projet/Data/distances92.txt")
 
 dij = []
 file = f.read().splitlines()
@@ -37,7 +37,7 @@ for i in range(len(file)):
 f.close()
         
 #recuperation des populations totales 
-f = open("/users/Etu3/3520413/mogpl/projet/Data/populations92.txt")
+f = open("/home/salom/mogpl/projet/Data/populations92.txt")
 
 vi=[]
 for data in f:
@@ -45,7 +45,7 @@ for data in f:
     vi.append(int(d))
 
 
-m2 = Model("question1")
+m2 = Model("question2")
 m2.setParam('OutputFlag',False)
 
 X = []
@@ -90,40 +90,35 @@ for j in range(k):
     m2.addConstr((s1/s2)<=((1+a)/k)) #contrainte 2: populations totales des villes composant un secteur ne doit pas dépasser gamma (voir poly)
 
 
-for j in range(k):
-    s = 0
-    for i in range(n):
-        s+=X[i][j] #correspond a la somme des xij sur i 
-        
-    m2.addConstr(s>=1)
-
 for i in range(n):
     s = 0
     for j in range(k):
         s+=X[i][j]*dij[i][J[j]]
     
-    m2.addConstr(s<=z)
+    m2.addConstr(s<=z) #contrainte 3: z doit correspondre au max des sommes
     
      
 m2.optimize()
 
 maxdij = 0
+moy = 0
 
 for i in range(n):
     for j in range(k):
-        if X[i][j].x == 1 and dij[i][j] > maxdij :
-            maxdij = dij[i][j]         
+        moy += X[i][j].x*dij[i][J[j]]
+        if X[i][j].x == 1 and dij[i][J[j]] > maxdij :
+            maxdij = dij[i][J[j]]         
 
-print "Valeur de la fonction objectif =" , m2.ObjVal
-print "Matrice des xij :\n" , m2.X
-print "Satisfaction moyenne =" , m2.ObjVal/n
-print "Satisfaction du maire le moins bien servi =" , maxdij
+print ("Valeur de la fonction objectif =" , m2.ObjVal)
+print ("Matrice des xij :\n" , m2.X)
+print ("Satisfaction moyenne =" , moy/n)
+print ("Satisfaction du maire le moins bien servi =" , maxdij)
 
 #récupération de la carte
 img = mpimg.imread("./Data/92.png")
 
 #récupération des coordonnées de chaque ville
-f = open("/users/Etu3/3520413/mogpl/projet/Data/coordvilles92.txt")
+f = open("/home/salom/mogpl/projet/Data/coordvilles92.txt")
 
 coord_i=[]
 for data in f:
@@ -152,4 +147,4 @@ for i in range(n):
 #            img[lo,la] = colors[j]
             
             
-mpimg.imsave("res_k=3_a=0,1.png", img)
+mpimg.imsave("res2_k="+str(k)+"_a="+str(a)+".png", img)
